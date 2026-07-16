@@ -97,38 +97,5 @@
       "随时赎回零锁仓",
       "机构级风控体系"
     ]
-  },
-  {
-    "name": "FlapVault-BTC",
-    "description": "BTC本位跨期套利金库",
-    "factory": "0xfedcba9876543210fedcba9876543210fedcba98",
-    "params": [
-      {
-        "name": "swapFee",
-        "value": "0.4%",
-        "description": "交易手续费"
-      },
-      {
-        "name": "minLeverage",
-        "value": "1x",
-        "description": "最小杠杆倍数"
-      },
-      {
-        "name": "maxLeverage",
-        "value": "5x",
-        "description": "最大杠杆倍数"
-      },
-      {
-        "name": "maxSupply",
-        "value": "1000 BTC",
-        "description": "最大供应量"
-      }
-    ],
-    "features": [
-      "BTC本位收益策略",
-      "跨期套利机会捕捉",
-      "冷存储安全保障",
-      "专业做市商流动性"
-    ]
   }
 ]
