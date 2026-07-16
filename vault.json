@@ -84,34 +84,6 @@
     ]
   },
   {
-    "name": "FlapVault-BTC",
-    "description": "BTC本位跨期套利金库",
-    "factory": "0xaabbccddeeff11223344556677889900aabbccdd",
-    "params": [
-      {
-        "name": "fee",
-        "value": "1.0%",
-        "description": "交易手续费"
-      },
-      {
-        "name": "apr",
-        "value": "20-35%",
-        "description": "预期年化收益"
-      },
-      {
-        "name": "period",
-        "value": "周",
-        "description": "套利周期"
-      }
-    ],
-    "features": [
-      "跨期套利",
-      "BTC本位",
-      "高收益",
-      "专业量化"
-    ]
-  },
-  {
     "name": "3333",
     "description": "11111",
     "factory": "2222",
