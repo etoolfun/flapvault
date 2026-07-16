@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlapVault 金库</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#c9a962',
+            primaryLight: '#d4ba7a',
+            primaryDark: '#a68b48',
+            surface: '#ffffff',
+            surfaceDark: '#fafafa',
+            border: '#e5e5e5',
+            borderLight: '#f0f0f0',
+            text: '#1a1a1a',
+            textLight: '#666666',
+            textLighter: '#999999',
+            bg: '#fafafa',
+          },
+          animation: {
+            'slide-down': 'slideDown 0.3s ease-out',
+          },
+          keyframes: {
+            slideDown: {
+              '0%': { opacity: '0', transform: 'translateY(-8px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    body {
+      background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+      min-height: 100vh;
+    }
+    .vault-card {
+      transition: all 0.25s ease;
+    }
+    .vault-card:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      transform: translateY(-1px);
+    }
+    .vault-card.active {
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      border-color: rgba(201, 169, 98, 0.3);
+    }
+    .contract-address {
+      font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+    }
+    .line-clamp-1 {
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body class="text-text font-sans">
+  <header class="bg-white/95 backdrop-blur-md border-b border-border sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primaryDark flex items-center justify-center">
+          <i class="fas fa-shield-alt text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold bg-gradient-to-r from-primaryDark to-primary bg-clip-text text-transparent">FlapVault</h1>
+          <p class="text-xs text-textLighter">BSC 蝴蝶金库工厂</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-xs text-textLighter flex items-center gap-1">
+          <i class="fas fa-lock"></i>安全
+        </span>
+        <span class="text-xs text-textLighter flex items-center gap-1">
+          <i class="fas fa-eye"></i>透明
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-6">
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/5 border border-primary/20 mb-3">
+        <i class="fas fa-box text-primary text-sm"></i>
+        <span class="text-xs text-primary font-medium">金库管理</span>
+      </div>
+      <h2 class="text-2xl font-bold mb-2">
+        <span class="bg-gradient-to-r from-primaryDark via-primary to-primaryLight bg-clip-text text-transparent">金库列表</span>
+      </h2>
+      <p class="text-textLighter text-xs">点击卡片查看详细信息</p>
+    </div>
+
+    <div id="vaultList" class="space-y-3">
+    </div>
+  </main>
+
+  <script>
+    async function loadVaults() {
+      try {
+        const response = await fetch('vault.json?t=' + Date.now(), {
+          cache: 'no-cache'
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const vaults = await response.json();
+        renderVaults(vaults);
+      } catch (error) {
+        console.error('Failed to load vault data:', error);
+        document.getElementById('vaultList').innerHTML = `
+          <div class="bg-white rounded-xl p-8 text-center border border-border">
+            <i class="fas fa-exclamation-circle text-gray-300 text-4xl mb-3"></i>
+            <p class="text-textLighter">加载金库数据失败</p>
+            <p class="text-xs text-textLighter mt-2">${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderVaults(vaults) {
+      const container = document.getElementById('vaultList');
+      
+      vaults.forEach((vault, index) => {
+        const card = document.createElement('div');
+        card.className = 'vault-card bg-white rounded-xl border border-borderLight overflow-hidden';
+        card.innerHTML = `
+          <div class="p-4 cursor-pointer flex items-center justify-between" 
+               onclick="toggleVault('vault-${index}')">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/10 to-primaryDark/5 flex items-center justify-center border border-primary/15">
+                <i class="fas fa-box text-primary text-sm"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-text">${vault.name}</h3>
+                <p class="text-xs text-textLighter line-clamp-1 mt-0.5">${vault.description}</p>
+              </div>
+            </div>
+            <div class="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center transition-transform duration-300"
+                 id="icon-${index}">
+              <i class="fas fa-chevron-down text-textLighter text-xs"></i>
+            </div>
+          </div>
+          <div id="vault-${index}" class="hidden animate-slide-down">
+            <div class="px-4 pb-4 pt-0 border-t border-borderLight">
+              <div class="pt-4 space-y-5">
+                <div>
+                  <div class="flex items-center gap-2 mb-3">
+                    <div class="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <i class="fas fa-sliders-h text-primary text-xs"></i>
+                    </div>
+                    <h4 class="text-sm font-semibold text-text">参数配置</h4>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    ${vault.params.map(param => `
+                      <div class="bg-gray-50 rounded-lg px-4 py-3">
+                        <div class="flex items-baseline justify-between">
+                          <span class="text-xs font-medium text-text">${param.name}</span>
+                          <span class="text-xs font-semibold text-primary">${param.value}</span>
+                        </div>
+                        <p class="text-xs text-textLighter mt-1">${param.description}</p>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2 mb-3">
+                    <div class="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <i class="fas fa-feather-alt text-primary text-xs"></i>
+                    </div>
+                    <h4 class="text-sm font-semibold text-text">功能特性</h4>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    ${vault.features.map(feature => `
+                      <div class="flex items-start gap-2">
+                        <div class="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <i class="fas fa-check text-primary text-xs"></i>
+                        </div>
+                        <span class="text-sm text-textLight">${feature}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+                <div class="pt-4 border-t border-borderLight">
+                  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <span class="text-xs text-textLighter">工厂合约地址</span>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                      <code class="text-xs text-textLight contract-address bg-gray-50 px-3 py-1.5 rounded flex-1 min-w-0 truncate">
+                        ${vault.factory}
+                      </code>
+                      <button onclick="copyAddress('${vault.factory}', event)" 
+                              class="w-8 h-8 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center transition-all flex-shrink-0">
+                        <i class="fas fa-copy text-textLighter text-xs"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function toggleVault(id) {
+      const content = document.getElementById(id);
+      const icon = document.getElementById(`icon-${id.split('-')[1]}`);
+      const card = content.parentElement;
+      
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+        card.classList.add('active');
+      } else {
+        content.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+        card.classList.remove('active');
+      }
+    }
+
+    function copyAddress(address, event) {
+      event.stopPropagation();
+      const btn = event.currentTarget;
+      const originalIcon = btn.innerHTML;
+      
+      function showSuccess() {
+        btn.innerHTML = '<i class="fas fa-check text-primary text-xs"></i>';
+        btn.classList.add('bg-primary/10');
+        setTimeout(() => {
+          btn.innerHTML = originalIcon;
+          btn.classList.remove('bg-primary/10');
+        }, 2000);
+      }
+      
+      function showError() {
+        alert('复制失败，请手动复制');
+      }
+      
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(address).then(showSuccess).catch(showError);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = address;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          showSuccess();
+        } catch (err) {
+          showError();
+        }
+        document.body.removeChild(textarea);
+      }
+    }
+
+    loadVaults();
+  </script>
+</body>
+</html>
