@@ -132,15 +132,15 @@
           <div class="p-4 cursor-pointer flex items-center justify-between" 
                onclick="toggleVault('vault-${index}')">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/10 to-primaryDark/5 flex items-center justify-center border border-primary/15">
+              <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/10 to-primaryDark/5 flex items-center justify-center border border-primary/15 flex-shrink-0">
                 <i class="fas fa-box text-primary text-lg"></i>
               </div>
-              <div>
+              <div class="min-w-0">
                 <h3 class="text-sm font-semibold text-text">${vault.name}</h3>
                 <p class="text-xs text-textLighter line-clamp-1 mt-0.5">${vault.description}</p>
               </div>
             </div>
-            <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center transition-transform duration-300"
+            <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center transition-transform duration-300 flex-shrink-0"
                  id="icon-${index}">
               <i class="fas fa-chevron-down text-textLighter text-sm"></i>
             </div>
