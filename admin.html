@@ -48,14 +48,9 @@
         <h2 class="text-lg font-bold text-text">金库列表</h2>
         <p class="text-xs text-textLighter">共 <span id="vaultCount">0</span> 个金库</p>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="testGitHubConnection()" class="px-3 py-1.5 border border-border text-textLight text-xs rounded-lg hover:bg-gray-50 flex items-center gap-1">
-          <i class="fas fa-check-circle"></i> 测试连接
-        </button>
-        <button onclick="addVault()" class="px-3 py-1.5 bg-primary text-white text-xs rounded-lg hover:bg-primaryDark transition-colors flex items-center gap-1">
-          <i class="fas fa-plus"></i> 添加金库
-        </button>
-      </div>
+      <button onclick="addVault()" class="px-3 py-1.5 bg-primary text-white text-xs rounded-lg hover:bg-primaryDark transition-colors flex items-center gap-1">
+        <i class="fas fa-plus"></i> 添加金库
+      </button>
     </div>
 
     <div id="vaultList" class="space-y-2">
@@ -112,60 +107,12 @@
   </div>
 
   <script>
-    const DEFAULT_CONFIG = {
-      vaultUrl: 'https://raw.githubusercontent.com/etoolfun/flapvault/main/vault.json',
-      token: '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',
-      repo: 'etoolfun/flapvault',
-      branch: 'main'
-    };
-
     let vaults = [];
     let editingIndex = -1;
-    let githubConfig = { ...DEFAULT_CONFIG };
-
-    function loadConfig() {
-      githubConfig = { ...DEFAULT_CONFIG };
-    }
-
-    async function testGitHubConnection() {
-      loadConfig();
-      const token = githubConfig.token.trim();
-      const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/vnd.github.v3+json'
-      };
-      
-      try {
-        const response = await fetch(
-          `https://api.github.com/repos/${githubConfig.repo}/contents/vault.json?ref=${githubConfig.branch}`,
-          { headers }
-        );
-        
-        console.log('测试连接状态:', response.status);
-        
-        if (response.ok) {
-          alert('✅ GitHub 连接成功！\n\n可以正常同步数据到 GitHub。');
-        } else if (response.status === 404) {
-          alert('⚠️ 文件不存在，首次同步会新建文件。');
-        } else if (response.status === 401) {
-          alert('❌ Token 无效或已过期！\n\n请重新生成 GitHub Token。');
-        } else if (response.status === 403) {
-          alert('❌ 权限不足！\n\n请确保 Token 有 repo 权限。');
-        } else {
-          const error = await response.json();
-          alert(`❌ 连接失败！\n\n状态: ${response.status}\n错误: ${error.message}`);
-        }
-      } catch (error) {
-        alert(`❌ 连接失败！\n\n${error.message}`);
-      }
-    }
 
     async function loadVaults() {
-      loadConfig();
       try {
-        const vaultUrl = localStorage.getItem('vaultUrl') || githubConfig.vaultUrl || 'vault.json';
-        const response = await fetch(vaultUrl + '?t=' + Date.now(), {
-          mode: 'cors',
+        const response = await fetch('/api/vaults?t=' + Date.now(), {
           cache: 'no-cache'
         });
         if (!response.ok) {
@@ -326,13 +273,11 @@
       document.getElementById('vaultCount').textContent = vaults.length;
       closeModal();
 
-      loadConfig();
-      console.log('当前配置:', githubConfig);
-      const result = await updateGitHubFile(JSON.stringify(vaults, null, 2));
+      const result = await syncToGitHub(JSON.stringify(vaults, null, 2));
       if (result.success) {
         alert(`✅ 保存成功！\n\n${result.message}`);
       } else {
-        alert(`⚠️ 保存失败！\n\n${result.message}\n\n请检查：\n1. GitHub Token 是否正确\n2. 仓库路径是否正确\n3. Token 是否有 repo 权限`);
+        alert(`⚠️ 保存失败！\n\n${result.message}`);
       }
     }
 
@@ -342,89 +287,46 @@
         renderVaults();
         document.getElementById('vaultCount').textContent = vaults.length;
       
-        loadConfig();
-        const result = await updateGitHubFile(JSON.stringify(vaults, null, 2));
+        const result = await syncToGitHub(JSON.stringify(vaults, null, 2));
         if (result.success) {
           alert(`✅ 删除成功！\n\n${result.message}`);
         } else {
-          alert(`⚠️ 删除成功（本地）！\n\n${result.message}\n\n请检查：\n1. GitHub Token 是否正确\n2. 仓库路径是否正确\n3. Token 是否有 repo 权限`);
+          alert(`⚠️ 删除成功（本地）！\n\n${result.message}`);
         }
       }
     }
 
-    async function updateGitHubFile(content) {
-      if (!githubConfig.token) {
-        return { success: false, message: '请先配置 GitHub Token' };
-      }
-      if (!githubConfig.repo) {
-        return { success: false, message: '请先配置 GitHub 仓库路径' };
-      }
-
-      const token = githubConfig.token.trim();
-      console.log('Token长度:', token.length);
-
+    async function syncToGitHub(content) {
       try {
-        console.log('GitHub配置:', githubConfig);
+        console.log('同步到 GitHub...');
         
-        const headers = {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/vnd.github.v3+json'
-        };
+        const shaResponse = await fetch('/api/vaults/sha');
+        const shaData = await shaResponse.json();
+        const sha = shaData.sha || '';
         
-        const getShaResponse = await fetch(
-          `https://api.github.com/repos/${githubConfig.repo}/contents/vault.json?ref=${githubConfig.branch}`,
-          { headers }
-        );
-        
-        console.log('获取SHA状态:', getShaResponse.status);
-        
-        let sha = '';
-        if (getShaResponse.ok) {
-          const existing = await getShaResponse.json();
-          sha = existing.sha;
-          console.log('获取到SHA:', sha);
-        } else if (getShaResponse.status === 404) {
-          console.log('文件不存在，新建文件');
-        } else {
-          const error = await getShaResponse.json();
-          console.log('获取SHA失败:', error);
-          return { success: false, message: `获取文件信息失败: ${error.message || getShaResponse.status}` };
-        }
+        console.log('获取到SHA:', sha);
 
         const encodedContent = btoa(unescape(encodeURIComponent(content)));
 
-        const putResponse = await fetch(
-          `https://api.github.com/repos/${githubConfig.repo}/contents/vault.json`,
-          {
-            method: 'PUT',
-            headers: {
-              ...headers,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              message: 'Update vault data via admin panel',
-              content: encodedContent,
-              sha,
-              branch: githubConfig.branch
-            })
-          }
-        );
+        const putResponse = await fetch('/api/vaults', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: encodedContent, sha })
+        });
 
         console.log('PUT状态:', putResponse.status);
         
         if (putResponse.ok) {
-          return { success: true, message: 'GitHub 文件已更新，Netlify 将自动重新部署' };
+          const result = await putResponse.json();
+          return { success: true, message: result.message || 'GitHub 文件已更新，Netlify 将自动重新部署' };
         } else {
           const error = await putResponse.json();
-          console.error('GitHub API错误:', error);
-          let errorMsg = `GitHub API 错误: ${putResponse.status}`;
-          if (error.message) errorMsg += ` - ${error.message}`;
-          if (error.errors) errorMsg += `\n详细错误: ${JSON.stringify(error.errors)}`;
-          return { success: false, message: errorMsg };
+          console.error('同步失败:', error);
+          return { success: false, message: error.message || `同步失败: ${putResponse.status}` };
         }
       } catch (error) {
-        console.error('GitHub更新异常:', error);
-        return { success: false, message: `GitHub 更新失败: ${error.message}` };
+        console.error('同步异常:', error);
+        return { success: false, message: `同步失败: ${error.message}` };
       }
     }
 

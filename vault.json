@@ -1,35 +1,30 @@
 [
   {
-    "name": "FlapVault-USDCaaa",
+    "name": "FlapVault-USDC",
     "description": "USDC稳定币收益策略金库",
     "factory": "0x1234567890abcdef1234567890abcdef12345678",
     "params": [
       {
-        "name": "swapFee",
-        "value": "0.3%",
+        "name": "fee",
+        "value": "0.5%",
         "description": "交易手续费"
       },
       {
-        "name": "minLeverage",
-        "value": "1x",
-        "description": "最小杠杆倍数"
+        "name": "apr",
+        "value": "8-12%",
+        "description": "预期年化收益"
       },
       {
-        "name": "maxLeverage",
-        "value": "5x",
-        "description": "最大杠杆倍数"
-      },
-      {
-        "name": "oracleDelay",
-        "value": "30s",
-        "description": "预言机延迟时间"
+        "name": "risk",
+        "value": "低",
+        "description": "风险等级"
       }
     ],
     "features": [
-      "支持多链资产跨链存入",
-      "智能自动调仓优化收益",
-      "实时风险监控预警",
-      "链上审计透明可查"
+      "自动复利",
+      "低风险策略",
+      "稳定收益",
+      "灵活赎回"
     ]
   },
   {
@@ -38,64 +33,82 @@
     "factory": "0xabcdef1234567890abcdef1234567890abcdef12",
     "params": [
       {
-        "name": "swapFee",
-        "value": "0.25%",
+        "name": "fee",
+        "value": "0.8%",
         "description": "交易手续费"
       },
       {
-        "name": "minLeverage",
-        "value": "1x",
-        "description": "最小杠杆倍数"
+        "name": "apr",
+        "value": "15-25%",
+        "description": "预期年化收益"
       },
       {
-        "name": "maxLeverage",
-        "value": "10x",
-        "description": "最大杠杆倍数"
-      },
-      {
-        "name": "liquidationThreshold",
-        "value": "80%",
-        "description": "清算阈值"
+        "name": "leverage",
+        "value": "3x",
+        "description": "杠杆倍数"
       }
     ],
     "features": [
-      "高杠杆收益增强",
-      "动态保证金调整",
-      "多策略自动切换",
-      "保险基金保护机制"
+      "高杠杆收益",
+      "自动调仓",
+      "风险控制",
+      "专业策略"
     ]
   },
   {
     "name": "FlapVault-DAI",
     "description": "DAI低风险稳定收益金库",
-    "factory": "0x9876543210fedcba9876543210fedcba98765432",
+    "factory": "0x11223344556677889900aabbccddeeff11223344",
     "params": [
       {
-        "name": "swapFee",
+        "name": "fee",
         "value": "0.3%",
         "description": "交易手续费"
       },
       {
-        "name": "minLeverage",
-        "value": "1x",
-        "description": "最小杠杆倍数"
+        "name": "apr",
+        "value": "5-8%",
+        "description": "预期年化收益"
       },
       {
-        "name": "maxLeverage",
-        "value": "3x",
-        "description": "最大杠杆倍数"
-      },
-      {
-        "name": "interestRate",
-        "value": "4.5%",
-        "description": "年化利率"
+        "name": "risk",
+        "value": "极低",
+        "description": "风险等级"
       }
     ],
     "features": [
-      "稳定币低风险策略",
-      "复利收益自动复投",
-      "随时赎回零锁仓",
-      "机构级风控体系"
+      "超低风险",
+      "稳定收益",
+      "无回撤",
+      "随时提现"
+    ]
+  },
+  {
+    "name": "FlapVault-BTC",
+    "description": "BTC本位跨期套利金库",
+    "factory": "0xaabbccddeeff11223344556677889900aabbccdd",
+    "params": [
+      {
+        "name": "fee",
+        "value": "1.0%",
+        "description": "交易手续费"
+      },
+      {
+        "name": "apr",
+        "value": "20-35%",
+        "description": "预期年化收益"
+      },
+      {
+        "name": "period",
+        "value": "周",
+        "description": "套利周期"
+      }
+    ],
+    "features": [
+      "跨期套利",
+      "BTC本位",
+      "高收益",
+      "专业量化"
     ]
   }
 ]
