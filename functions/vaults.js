@@ -19,7 +19,7 @@ exports.handler = async (event) => {
   }
   
   if (httpMethod === 'PUT') {
-    const { content, sha } = JSON.parse(event.body);
+    const { content } = JSON.parse(event.body);
     const token = process.env.GITHUB_TOKEN;
     
     if (!token) {
@@ -30,6 +30,22 @@ exports.handler = async (event) => {
     }
     
     try {
+      const shaResponse = await fetch(
+        'https://api.github.com/repos/etoolfun/flapvault/contents/vault.json',
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        }
+      );
+      
+      let sha = '';
+      if (shaResponse.ok) {
+        const shaData = await shaResponse.json();
+        sha = shaData.sha || '';
+      }
+      
       const response = await fetch(
         'https://api.github.com/repos/etoolfun/flapvault/contents/vault.json',
         {
