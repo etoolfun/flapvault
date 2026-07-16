@@ -26,33 +26,5 @@
       "稳定收益",
       "灵活赎回"
     ]
-  },
-  {
-    "name": "FlapVault-WETH",
-    "description": "WETH高杠杆收益增强金库",
-    "factory": "0xabcdef1234567890abcdef1234567890abcdef12",
-    "params": [
-      {
-        "name": "fee",
-        "value": "0.8%",
-        "description": "交易手续费"
-      },
-      {
-        "name": "apr",
-        "value": "15-25%",
-        "description": "预期年化收益"
-      },
-      {
-        "name": "leverage",
-        "value": "3x",
-        "description": "杠杆倍数"
-      }
-    ],
-    "features": [
-      "高杠杆收益",
-      "自动调仓",
-      "风险控制",
-      "专业策略"
-    ]
   }
 ]
