@@ -1,6 +1,6 @@
 [
   {
-    "name": "FlapVault-USDC222",
+    "name": "FlapVault-USDC9999",
     "description": "USDC稳定币收益策略金库",
     "factory": "0x1234567890abcdef1234567890abcdef12345678",
     "params": [
@@ -110,12 +110,5 @@
       "高收益",
       "专业量化"
     ]
-  },
-  {
-    "name": "112222",
-    "description": "2222",
-    "factory": "222",
-    "params": [],
-    "features": []
   }
 ]
