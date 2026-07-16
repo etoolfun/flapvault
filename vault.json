@@ -54,33 +54,5 @@
       "风险控制",
       "专业策略"
     ]
-  },
-  {
-    "name": "FlapVault-DAI",
-    "description": "DAI低风险稳定收益金库",
-    "factory": "0x11223344556677889900aabbccddeeff11223344",
-    "params": [
-      {
-        "name": "fee",
-        "value": "0.3%",
-        "description": "交易手续费"
-      },
-      {
-        "name": "apr",
-        "value": "5-8%",
-        "description": "预期年化收益"
-      },
-      {
-        "name": "risk",
-        "value": "极低",
-        "description": "风险等级"
-      }
-    ],
-    "features": [
-      "超低风险",
-      "稳定收益",
-      "无回撤",
-      "随时提现"
-    ]
   }
 ]
