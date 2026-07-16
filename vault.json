@@ -19,5 +19,21 @@
       "50%本币+50%的其他代币，V2池子",
       "LP权限自动给黑洞"
     ]
+  },
+  {
+    "name": "燃烧代币抽奖金库",
+    "description": "燃烧1万代币购买1张抽奖券",
+    "factory": "0xEa96e3A3f055B4BEa30f6629aD199B2a18fE8aE6",
+    "params": [
+      {
+        "name": "rewardToken",
+        "value": "USDT",
+        "description": "可以设置其他V2池子代币"
+      }
+    ],
+    "features": [
+      "燃烧1万代币获得1张抽奖券",
+      "随机中奖，中奖一次消耗一张抽奖券"
+    ]
   }
 ]
